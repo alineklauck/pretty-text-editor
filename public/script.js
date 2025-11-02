@@ -40,29 +40,43 @@ if (document.getElementById("texto") && document.getElementById("titulo")) {
   const fonteSel = document.getElementById("font-family");
   let tamanhoFonte = 16;
   let arquivo = null;
+  let timer;
 
-  // Carregar arquivo
-  fetch("/api/arquivos")
-    .then(res => res.json())
-    .then(arquivos => {
-      arquivo = arquivos.find(a => a.id == id);
-      if (!arquivo) return;
-      titulo.value = arquivo.titulo;
-      texto.innerHTML = arquivo.conteudo;
+  // Carregar arquivo do servidor
+  fetch("/api/arquivos/" + id)
+    .then(res => res.text())
+    .then(html => {
+      // Extrair <body> e <title>
+      const bodyMatch = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+      const titleMatch = html.match(/<title>([\s\S]*?)<\/title>/i);
+
+      texto.innerHTML = bodyMatch ? bodyMatch[1] : "";
+      titulo.value = titleMatch ? titleMatch[1] : "Novo Arquivo";
+
       atualizarContador();
+
+      // Ativa auto-save com debounce
+      texto.addEventListener("input", () => {
+        clearTimeout(timer);
+        timer = setTimeout(salvar, 500);
+      });
+
+      titulo.addEventListener("input", () => {
+        clearTimeout(timer);
+        timer = setTimeout(salvar, 500);
+      });
     })
     .catch(err => console.error("Erro ao carregar arquivo:", err));
+
 
   // Toolbar
   window.comando = (cmd) => document.execCommand(cmd, false, null);
   window.colorir = (cor) => document.execCommand("foreColor", false, cor);
 
   // Contador de palavras
-  texto.addEventListener("input", atualizarContador);
   function atualizarContador() {
     const palavras = texto.innerText.trim().split(/[\s—–-]+/).filter(p => p.length);
     contador.textContent = palavras.length;
-    salvar();
   }
 
   // Fonte
@@ -72,7 +86,7 @@ if (document.getElementById("texto") && document.getElementById("titulo")) {
   };
   fonteSel.onchange = () => {
     const fonte = fonteSel.value;
-    texto.style.fontFamily = fonte;
+    // Aplica apenas na seleção atual
     document.execCommand("fontName", false, fonte);
   };
 
@@ -82,15 +96,18 @@ if (document.getElementById("texto") && document.getElementById("titulo")) {
     location.href = "index.html";
   };
 
-  // Auto salvar
+  // Função salvar sem sobrescrever conteúdo
   function salvar() {
-    if (!arquivo) return;
-    arquivo.titulo = titulo.value;
-    arquivo.conteudo = texto.innerHTML;
+    if (!id) return;
+
+    const novoConteudo = texto.innerHTML;
+    const novoTitulo = titulo.value;
+
     fetch("/api/arquivos/" + id, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(arquivo)
-    });
+      body: JSON.stringify({ titulo: novoTitulo, conteudo: novoConteudo })
+    })
+    .catch(err => console.error("Erro ao salvar arquivo:", err));
   }
 }

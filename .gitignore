@@ -17,6 +17,7 @@ coverage/
 .next/
 .nuxt/
 .svelte-kit/
+data/
 
 # Ambiente
 .env
