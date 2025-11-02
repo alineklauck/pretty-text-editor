@@ -53,11 +53,24 @@ if (document.getElementById("texto") && document.getElementById("titulo")) {
       texto.innerHTML = bodyMatch ? bodyMatch[1] : "";
       titulo.value = titleMatch ? titleMatch[1] : "Novo Arquivo";
 
+      // Carrega o tamanho da fonte salvo para este arquivo
+      const savedFontSize = localStorage.getItem("fontSize-" + id);
+      if (savedFontSize) {
+        tamanhoFonte = parseInt(savedFontSize, 10);
+      } else {
+        tamanhoFonte = 16; // Usa o padrão se nada for salvo
+      }
+      // Aplica o tamanho da fonte ao editor
+      texto.style.fontSize = tamanhoFonte + "px";
+
       atualizarContador();
+
+      
 
       // Ativa auto-save com debounce
       texto.addEventListener("input", () => {
         clearTimeout(timer);
+        atualizarContador();
         timer = setTimeout(salvar, 500);
       });
 
@@ -69,20 +82,50 @@ if (document.getElementById("texto") && document.getElementById("titulo")) {
     .catch(err => console.error("Erro ao carregar arquivo:", err));
 
 
+
   // Toolbar
-  window.comando = (cmd) => document.execCommand(cmd, false, null);
-  window.colorir = (cor) => document.execCommand("foreColor", false, cor);
+  window.comando = (cmd) => {
+    // Verifica se o comando já está ativo na seleção
+    const ativo = document.queryCommandState(cmd);
+    // Se estiver ativo, executa novamente para remover
+    document.execCommand(cmd, false, !ativo ? null : null);
+  };
+
+  window.colorir = (cor) => {
+    // Para cor, o toggle não existe nativo, então vamos verificar se a cor atual é igual
+    const corAtual = document.queryCommandValue("foreColor");
+    if (corAtual.toLowerCase() === cor.toLowerCase()) {
+      document.execCommand("foreColor", false, ""); // Remove cor
+    } else {
+      document.execCommand("foreColor", false, cor); // Aplica nova cor
+    }
+  };
 
   // Contador de palavras
   function atualizarContador() {
-    const palavras = texto.innerText.trim().split(/[\s—–-]+/).filter(p => p.length);
-    contador.textContent = palavras.length;
+    const textoRaw = texto.innerText.trim();
+
+    // Separa palavras em inglês ou outros alfabetos por espaço
+    const palavrasIngles = textoRaw
+      .split(/\s+/)                    // separa por espaços
+      .filter(p => /[A-Za-z0-9]/.test(p)); // mantém só palavras com letras ou números
+
+    // Conta caracteres chineses
+    const caracteresChines = textoRaw.match(/[\u4e00-\u9fff]/g) || []; // todos os caracteres chineses
+
+    // Soma palavras em inglês + caracteres chineses
+    const totalPalavras = palavrasIngles.length + caracteresChines.length;
+
+    contador.textContent = totalPalavras;
   }
 
   // Fonte
   window.mudarFonte = (delta) => {
     tamanhoFonte += delta;
     texto.style.fontSize = tamanhoFonte + "px";
+    if (id) {
+      localStorage.setItem("fontSize-" + id, tamanhoFonte);
+    }
   };
   fonteSel.onchange = () => {
     const fonte = fonteSel.value;
@@ -111,3 +154,4 @@ if (document.getElementById("texto") && document.getElementById("titulo")) {
     .catch(err => console.error("Erro ao salvar arquivo:", err));
   }
 }
+

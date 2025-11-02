@@ -1,8 +1,35 @@
+/* Impede a rolagem da página inteira */
+html {
+  overflow: hidden;
+  height: 100%;
+
+}
+
 body {
   font-family: sans-serif;
   margin: 0;
   padding: 0;
   text-align: center;
+
+  /* --- MUDANÇA PRINCIPAL: LAYOUT FLEXBOX --- */
+  display: flex;
+  flex-direction: column;
+  
+  /* Usa a altura exata da janela (via JS) */
+  height: var(--app-height, 100vh); 
+  
+  /* Impede a rolagem do body */
+  overflow: hidden; 
+}
+
+/* --- MUDANÇA PRINCIPAL: CONTEÚDO ROláVEL --- */
+#page-content {
+  flex-grow: 1; /* Faz o conteúdo ocupar todo o espaço vago */
+  overflow-y: auto; /* ADICIONA ROLAGEM *APENAS* A ESTE ELEMENTO */
+  -webkit-overflow-scrolling: touch; /* Melhora a rolagem no iOS */
+  /* Adiciona um preenchimento interno para o conteúdo não 
+     colar nas bordas do header/footer */
+  padding: 10px 0; 
 }
 
 h1 {
@@ -20,14 +47,29 @@ button {
   background: linear-gradient(to right, #ffe, #f9f);
 }
 
+/* Header se mantém no topo */
 header {
-  position: sticky; 
-  top: 0;
+  /* REMOVIDO: position: sticky; */
+  /* REMOVIDO: top: 0; */
+  flex-shrink: 0; /* Impede de encolher */
+  z-index: 10; /* Garante que fique por cima */
 }
 
+/* Footer se mantém na base */
 footer {
-  position: sticky;
-  bottom: 0;
+  /* REMOVIDO: position: sticky; */
+  /* REMOVIDO: bottom: 0; */
+  flex-shrink: 0; /* Impede de encolher */
+}
+
+/* header e footer (sem grandes mudanças) */
+header, footer {
+  position: relative; 
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+  background: linear-gradient(to right, #ffe, #f9f);
+  user-select: none;
 }
 
 header::after {
@@ -49,15 +91,6 @@ footer::before {
   background-color: white;
   border-bottom: 5px dashed #ccc;
 }
-
-
-header, footer {
-  display: flex;
-  justify-content: space-between;
-  padding: 20px;
-  background: linear-gradient(to right, #ffe, #f9f);
-}
-
 
 .divisor {
   width: 100%;

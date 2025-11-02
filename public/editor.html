@@ -12,6 +12,7 @@
     <button onclick="mudarFonte(+1)">A+</button>
     <button onclick="mudarFonte(-1)">A-</button>
     <select id="font-family">
+      <option value="sans-serif">Sans Serif</option>
       <option value="Deng">Deng</option>
       <option value="Josefin Sans">Josefin Sans</option>
       <option value="Ma Shan Zheng">Ma Shan Zheng</option>
@@ -19,23 +20,50 @@
     </select>
 
   </header>
-  <input id="titulo" />
+  <main id="page-content">
+    <input id="titulo" />
 
-  <div id="texto" contenteditable="true"></div>
+    <div id="texto" contenteditable="true"></div>
 
-  <div id="toolbar">
-    
-  </div>
+    <div id="toolbar">
+      
+    </div>
+  </main>
   <div class="divisor"></div>
   <footer>
 <button onclick="comando('bold')">B</button>
     <button onclick="comando('italic')"><i>i</i></button>
     <button onclick="colorir('purple')">🟣</button>
     <button onclick="colorir('pink')">🌸</button>
-    <button onclick="colorir('teal')">🔵</button>
+    <button onclick="colorir('teal')">🍀</button>
+    <button onclick="colorir('black')">🖤</button>
     <span id="contador">0</span>
   </footer>
 
   <script src="script.js"></script>
+  <script>
+    const setAppHeight = () => {
+      const doc = document.documentElement;
+      // Usa a altura da 'VisualViewport' (que muda com o teclado)
+      // ou window.innerHeight como fallback
+      const height = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      doc.style.setProperty('--app-height', `${height}px`);
+    };
+
+    // Dispara na carga da página
+    window.addEventListener('load', setAppHeight);
+
+    // Verifica se a API VisualViewport existe
+    if (window.visualViewport) {
+      // Ouve o evento 'resize' da VisualViewport (DISPARA COM O TECLADO)
+      window.visualViewport.addEventListener('resize', setAppHeight);
+    } else {
+      // Fallback para o evento 'resize' normal (que falha no teclado)
+      window.addEventListener('resize', setAppHeight);
+    }
+
+    // Define a altura inicial
+    setAppHeight();
+  </script>
 </body>
 </html>
