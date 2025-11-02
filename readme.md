@@ -2,7 +2,8 @@
 
 This is a mobile first text editor. It saves the text in the server.<br><br>
 You will need <a href="https://nodejs.org/en/download">NodeJs.</a><br>
-> npm install express<br>
+> npm install express
+
 Download the files and double click run.bat, the app will be hosted on localhost.
 
 ### ☑To do:
