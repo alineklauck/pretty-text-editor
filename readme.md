@@ -11,9 +11,10 @@ Download the files and double click run.bat, the app will be hosted on localhost
 ☑ Return text to black/reset formatting<br>
 ☑ Find another way to save the files<br>
 ☑ Save formatting inside the file<br>
-☐ Excluir arquivo<br>
-☐ Mover arquivo de lugar na ordem <br>
+☑ Excluir arquivo<br>
+☑ Mover arquivo de lugar na ordem <br>
 ☐ Pastas<br>
 ☐ Compartilhar<br>
 ☐ Trocar combobox nativo por personalizado<br>
-☐ Seleção desseleciona no mobile quando vai trocar de fonte (Combobox personalizado)
+☐ Seleção desseleciona no mobile quando vai trocar de fonte (Combobox personalizado)<br>
+☐ Identificar fonte de acordo com a pasta, sem hard codar

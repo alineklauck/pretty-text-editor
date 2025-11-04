@@ -1,8 +1,8 @@
+/* ===== CONFIGURAÇÕES GERAIS ===== */
 /* Impede a rolagem da página inteira */
 html {
   overflow: hidden;
   height: 100%;
-
 }
 
 body {
@@ -10,68 +10,61 @@ body {
   margin: 0;
   padding: 0;
   text-align: center;
-
-  /* --- MUDANÇA PRINCIPAL: LAYOUT FLEXBOX --- */
+  
+  /* Layout Flexbox principal */
   display: flex;
   flex-direction: column;
   
   /* Usa a altura exata da janela (via JS) */
-  height: var(--app-height, 100vh); 
+  height: var(--app-height, 100vh);
   
   /* Impede a rolagem do body */
-  overflow: hidden; 
+  overflow: hidden;
 }
 
-/* --- MUDANÇA PRINCIPAL: CONTEÚDO ROláVEL --- */
+/* ===== DEFINIÇÕES DE FONTES ===== */
+@font-face {
+  font-family: 'Deng';
+  src: url('fonts/Deng.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Josefin Sans';
+  src: url('fonts/JosefinSans.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Ma Shan Zheng';
+  src: url('fonts/MaShanZheng.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  src: url('fonts/OpenSans.ttf') format('truetype');
+}
+
+/* ===== LAYOUT PRINCIPAL ===== */
+/* Conteúdo rolável principal */
 #page-content {
-  flex-grow: 1; /* Faz o conteúdo ocupar todo o espaço vago */
-  overflow-y: auto; /* ADICIONA ROLAGEM *APENAS* A ESTE ELEMENTO */
-  -webkit-overflow-scrolling: touch; /* Melhora a rolagem no iOS */
-  /* Adiciona um preenchimento interno para o conteúdo não 
-     colar nas bordas do header/footer */
-  padding: 10px 0; 
+  flex-grow: 1; /* Ocupa todo o espaço disponível */
+  overflow-y: auto; /* Rolagem apenas neste elemento */
+  -webkit-overflow-scrolling: touch; /* Melhora rolagem no iOS */
+  padding: 10px 0; /* Espaçamento interno */
 }
 
-h1 {
-  margin: 20px 0;
-}
-
-button {
-  border: none;
-  background: none;
-}
-
-#lista div {
-  margin: 5px;
-  padding: 10px;
-  background: linear-gradient(to right, #ffe, #f9f);
-}
-
-/* Header se mantém no topo */
-header {
-  /* REMOVIDO: position: sticky; */
-  /* REMOVIDO: top: 0; */
-  flex-shrink: 0; /* Impede de encolher */
-  z-index: 10; /* Garante que fique por cima */
-}
-
-/* Footer se mantém na base */
-footer {
-  /* REMOVIDO: position: sticky; */
-  /* REMOVIDO: bottom: 0; */
-  flex-shrink: 0; /* Impede de encolher */
-}
-
-/* header e footer (sem grandes mudanças) */
+/* ===== HEADER E FOOTER ===== */
 header, footer {
-  position: relative; 
+  position: relative;
   display: flex;
   justify-content: space-between;
   padding: 20px;
   background: linear-gradient(to right, #ffe, #f9f);
   user-select: none;
+  flex-shrink: 0; /* Impede encolhimento */
+  z-index: 10; /* Garante sobreposição */
 }
 
+/* Efeitos decorativos do header */
 header::after {
   content: '';
   position: absolute;
@@ -82,6 +75,7 @@ header::after {
   border-bottom: 5px dashed #ccc;
 }
 
+/* Efeitos decorativos do footer */
 footer::before {
   content: '';
   position: absolute;
@@ -92,10 +86,17 @@ footer::before {
   border-bottom: 5px dashed #ccc;
 }
 
-.divisor {
-  width: 100%;
+/* ===== ELEMENTOS DE TEXTO ===== */
+h1 {
+  margin: 20px 0;
+}
+
+#titulo {
+  margin-top: 10px;
+  height: 50px;
+  font-size: 30px;
+  text-align: center;
   border: none;
-  border-bottom: 5px dashed #ccc;
 }
 
 #texto {
@@ -115,6 +116,12 @@ footer::before {
   outline: none;
 }
 
+/* ===== BOTÕES E CONTROLES ===== */
+button {
+  border: none;
+  background: none;
+}
+
 #toolbar {
   display: flex;
   gap: 10px;
@@ -122,30 +129,109 @@ footer::before {
   margin: 10px 0;
 }
 
-#titulo {
-  margin-top: 10px;
-  height: 50px;
-  font-size: 30px;
-  text-align: center;
+/* ===== LISTA E ITENS ===== */
+#lista {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+/* Estilo base dos itens da lista */
+#lista div {
+  margin: 5px;
+  padding: 10px;
+  background: linear-gradient(to right, rgb(255, 255, 255), rgb(247, 195, 247));
+}
+
+/* Item de arquivo */
+.item-arquivo {
+  position: relative;
+  background: #f8f8f8;
+  border-radius: 20px;
+  padding: 10px 64px 10px 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  user-select: none;
+  transition: transform 0.18s ease, background 0.15s ease, opacity 0.15s ease;
+}
+
+.item-arquivo:hover {
+  background: #eee;
+}
+
+.item-arquivo.dragging {
+  opacity: 0.6;
+  transform: scale(0.98);
+}
+
+/* Título do arquivo */
+.titulo-arquivo {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ===== COMPONENTES DE DRAG & DROP ===== */
+/* Handle para arrastar */
+.drag-handle {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #ccc;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: grab;
+  user-select: none;
+  touch-action: none; /* impede o scroll no mobile enquanto arrasta */
+  transition: background 0.2s, transform 0.2s;
+}
+
+.drag-handle.grabbing {
+  cursor: grabbing;
+  transform: translateY(-50%) scale(0.98);
+  background: #bfbfbf;
+}
+
+/* Placeholder para área de drop */
+.placeholder {
+  border-radius: 6px;
+  background: rgba(0,0,0,0.03);
+  margin: 0;
+  transition: height 0.12s;
+}
+
+/* ===== BOTÃO EXCLUIR ===== */
+.btn-excluir {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
   border: none;
+  background: none;
+  color: #d22;
+  font-size: 18px;
+  cursor: pointer;
+  line-height: 1;
 }
 
-@font-face {
-    font-family: 'Deng';
-    src: url('fonts/Deng.ttf') format('truetype');
+.btn-excluir:hover {
+  color: #a00;
 }
 
-@font-face {
-    font-family: 'Josefin Sans';
-    src: url('fonts/JosefinSans.ttf') format('truetype');
+/* ===== ELEMENTOS DECORATIVOS ===== */
+.divisor {
+  width: 100%;
+  border: none;
+  border-bottom: 5px dashed #ccc;
 }
 
-@font-face {
-    font-family: 'Ma Shan Zheng';
-    src: url('fonts/MaShanZheng.ttf') format('truetype');
-}
-
-@font-face {
-    font-family: 'Open Sans';
-    src: url('fonts/OpenSans.ttf') format('truetype');
-}
